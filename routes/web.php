@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\IndexController;
+use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,24 +16,19 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    // return view('welcome');
-
-    return "Hello, World!";
+Route::controller(IndexController::class)->group(function(){
+    Route::get('/', 'index')->name('home');
+    Route::get('/add', 'add');
+    Route::get('/blocked', 'blocked')->name('blocked');
+    Route::get('/single', 'single');
+    Route::get('/user', 'user');
 });
 
-Route::get('/users', function () {
-    return "This is a users page";
+Route::controller(AuthController::class)->group(function(){
+    Route::post('/registration', 'registration')->name('register');
+    Route::post('/auth', 'auth')->name('login');
+    Route::get('/logout', 'logout')->name('logout');
 });
 
-Route::get('/users/{id}', function ($id) {
-    return "This is a users page #". $id;
-});
 
-Route::get('/books', function () {
-    return "Все книги";
-});
 
-Route::get('/books/{id}', function ($id) {
-    return "Книга под номером - ". $id;
-});
