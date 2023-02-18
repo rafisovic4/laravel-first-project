@@ -32,8 +32,22 @@ class IndexController extends Controller
     {
         return view('single');
     }
-    public function user()
+    public function user(User $user)
     {
-        return view('user');
+        if($user === null) {
+            return redirect()->route('home');
+        }
+
+        return view('user', compact('user'));
+    }
+
+    public function update(Article $article)
+    {
+        $categories = Category::all();
+
+        return view('update', [
+            'categories' => $categories,
+            'article' => $article
+        ]);
     }
 }

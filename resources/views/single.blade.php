@@ -17,17 +17,22 @@
             </div>
             <div class="meta">
                 <time class="published" datetime="2015-11-01">{{$article['created_at']->format('d.m.Y')}}</time>
-                <a href="#" class="author"><span class="name">{{$article->author()->username}}</span><img src="{{$article->author()->image_path}}" alt=""/></a>
+                <a href="#" class="author"><span class="name">{{$article->author()->username}}</span><img
+                        src="{{$article->author()->image_url}}" alt=""/></a>
             </div>
         </header>
-        <span class="image featured"><img src="{{$article['image_path']}}" alt=""/></span>
-        <p>{{$article['content']}}</p>
+        <span class="image featured"><img src="{{$article->image_url}}" alt=""/></span>
+        <p>{{substr($article['content'], 0, 120)}}</p>
         <footer>
             <ul class="stats">
-                <li><a href="#">Edit</a></li>
-                <li><a href="#" class="red">Delete</a></li>
-                <li><a href="#" class="red">Blocked</a></li>
-                <li><a href="#" class="icon fa-heart">28</a></li>
+                @auth
+                    @if($article->user_has_actions)
+                        <li><a href="{{route('article.update', $article)}}">Edit</a></li>
+                        <li><a href="{{route('article.delete', $article)}}" class="red">Delete</a></li>
+                        <li><a href="{{route('article.block', $article)}}" class="red">Blocked</a></li>
+                    @endif
+                @endauth
+                <li><a href="#" class="icon fa-eye">{{$article->view_count}}</a></li>
                 <li><a href="#" class="icon fa-comment">128</a></li>
                 <li><a href="#">{{$article->category()->name}}</a></li>
             </ul>
@@ -36,37 +41,31 @@
 
     <!-- Comments -->
     <div class="post">
+
+
         <section class="comments">
             <h3>Comments</h3>
-            <form>
-                <textarea></textarea><br>
-                <input type="submit" class="button big fit" value="Add Comment">
-            </form>
+            @auth
+                <form>
+                    <textarea></textarea><br>
+                    <input type="submit" class="button big fit" value="Add Comment">
+                </form>
+            @endauth
         </section>
-        <article class="comment">
-            <div class="comment-autor">
-                <a href="#"><img src="images/avatar.jpg"></a>
-                <a href="#">User</a>
-            </div>
-            <p>Mauris neque quam, fermentum ut nisl vitae, convallis maximus nisl. Sed mattis nunc id lorem euismod
-                placerat.</p>
-        </article>
-        <article class="comment">
-            <div class="comment-autor">
-                <a href="#"><img src="images/avatar.jpg"></a>
-                <a href="#">User</a>
-            </div>
-            <p>Mauris neque quam, fermentum ut nisl vitae, convallis maximus nisl. Sed mattis nunc id lorem euismod
-                placerat.</p>
-        </article>
-        <article class="comment">
-            <div class="comment-autor">
-                <a href="#"><img src="images/avatar.jpg"></a>
-                <a href="#">User</a>
-            </div>
-            <p>Mauris neque quam, fermentum ut nisl vitae, convallis maximus nisl. Sed mattis nunc id lorem euismod
-                placerat.</p>
-        </article>
+
+        @if(count($article->comments()))
+            @foreach($article->comments() as $comment)
+                <article class="comment">
+                    <div class="comment-autor">
+                        <a href="{{route('user', $comment->user_id)}}"><img src="{{$comment->user()->image_url}}"></a>
+                        <a href="{{route('user', $comment->user_id)}}">{{$comment->user()->username}}</a>
+                    </div>
+                    <p>{{$comment['text']}}</p>
+                </article>
+            @endforeach
+        @else
+            <h3>Комментариев пока нет ;(</h3>
+        @endif
     </div>
 
 </div>

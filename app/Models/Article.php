@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class Article extends Model
 {
@@ -28,5 +30,21 @@ class Article extends Model
     public function category()
     {
         return $this->hasOne(Category::class, 'id', 'category_id')->first();
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(ArticleComments::class)->get();
+    }
+
+    //camelCase
+    //$article->image_url
+    public function getImageUrlAttribute() {
+        return asset('public' . Storage::url($this->image_path));
+    }
+
+    public function getUserHasActionsAttribute (): bool
+    {
+        return Auth::user()->id === $this->author_id || Auth::user()->role === 'admin';
     }
 }
